@@ -338,12 +338,18 @@ def get_connection():
     return psycopg2.connect(NEON_CONNECTION_STRING, sslmode="require")
 
 def run_query(sql: str) -> pd.DataFrame:
-    conn = get_connection()
-    try:
-        return pd.read_sql_query(sql, conn)
-    except Exception:
-        conn.rollback()
-        raise
+    last_err = None
+    for attempt in range(3):
+        try:
+            conn = psycopg2.connect(NEON_CONNECTION_STRING, sslmode="require")
+            conn.autocommit = True
+            df = pd.read_sql_query(sql, conn)
+            conn.close()
+            return df
+        except Exception as e:
+            last_err = e
+            time.sleep(2)
+    raise last_err
 
 # ── Schema introspection ──────────────────────────────────────────────────────
 @st.cache_data(show_spinner="Reading your schema…")
