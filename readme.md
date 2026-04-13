@@ -1,4 +1,4 @@
-# Trading DB — Natural Language Query (RAG + FAISS + Gemini + Neon)
+#  DB — Natural Language Query (RAG + FAISS + Gemini + Neon)
 
 ## What this does
 Ask plain-English questions about your PostgreSQL trading database.  
